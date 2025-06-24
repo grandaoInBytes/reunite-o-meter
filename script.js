@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
   ];
 
   const backgroundContainer = document.querySelector('.background');
-  const numImagesToShow = 30;
+  const numImagesToShow = 20;
 
   function getRandom(min, max) {
     return Math.random() * (max - min) + min;
