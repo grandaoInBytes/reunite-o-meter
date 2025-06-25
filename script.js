@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
   ];
 
   const backgroundContainer = document.querySelector('.background');
-  const numImagesToShow = 20;
+  const numImagesToShow = 5;
 
   function getRandom(min, max) {
     return Math.random() * (max - min) + min;
@@ -78,10 +78,10 @@ document.addEventListener('DOMContentLoaded', function () {
     img.src = randomImagePath;
     img.alt = 'Background image';
     img.style.position = 'absolute'; // Important for positioning
-    img.style.filter = 'blur(2.5px)';
+    //img.style.filter = 'blur(2.5px)';
     img.style.left = getRandom(-20, 100) + 'vw';
     img.style.top = getRandom(-20, 100) + 'vh';
-    img.style.width = getRandom(200, 600) + 'px';
+    img.style.width = getRandom(600, 1000) + 'px';
     img.style.height = img.style.width;
     img.style.opacity = 0; // Start with opacity 0
 
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Define the options for the animation
     const options = {
-      duration: getRandom(35000, 45000), // Animate over 35 to 45 seconds
+      duration: getRandom(20000, 35000), // Animate over 20 to 35 seconds
       easing: 'linear',
       fill: 'forwards' // Ensures it stays at its final state (invisible)
     };
