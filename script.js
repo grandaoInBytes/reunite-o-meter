@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // --- Countdown and Progress Bar Logic ---
   const reunionDate = new Date('July 31, 2025 16:00:00').getTime();
 
-  // Countdown elements
   const daysSpan = document.getElementById('days');
   const hoursSpan = document.getElementById('hours');
   const minutesSpan = document.getElementById('minutes');
@@ -10,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const progressBar = document.getElementById('progress-bar');
   const message = document.querySelector('.message');
 
-  // To update progress bar
   const startDate = new Date('May 13, 2025 16:00:00').getTime();
   const totalDuration = reunionDate - startDate;
 
@@ -24,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
       message.textContent = 'Welcome to Italy!🥰';
       progressBar.style.width = '100%';
       progressBar.style.boxShadow = '0 0 20px #aaffaa, 0 0 30px #aaffaa';
-      return; // Stop the function here
+      return;
     }
 
     const days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -45,11 +43,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // loop to update the countdown every second
   const countdownInterval = setInterval(updateCountdown, 1000);
   updateCountdown();
 
-  // Dynamic Background Image Animation Logic ---
+  // --- Single Centered Background Image with Blurred Background ---
   const backgroundImages = [
     'images/image1.jpg', 'images/image2.jpg', 'images/image3.jpg',
     'images/image4.jpg', 'images/image5.jpg', 'images/image6.jpg',
@@ -59,67 +56,62 @@ document.addEventListener('DOMContentLoaded', function () {
   ];
 
   const backgroundContainer = document.querySelector('.background');
-  const numImagesToShow = 5;
+  const switchInterval = 4000; // 10 seconds
+  let previousIndex = -1;
 
-  function getRandom(min, max) {
-    return Math.random() * (max - min) + min;
-  }
+  // Create blurred full-screen background
+  const blurredBg = document.createElement('div');
+  blurredBg.style.position = 'absolute';
+  blurredBg.style.top = 0;
+  blurredBg.style.left = 0;
+  blurredBg.style.width = '100vw';
+  blurredBg.style.height = '100vh';
+  blurredBg.style.zIndex = '-2';
+  blurredBg.style.backgroundSize = 'cover';
+  blurredBg.style.backgroundPosition = 'center';
+  blurredBg.style.filter = 'blur(25px)';
+  blurredBg.style.transition = 'background-image 1s ease-in-out';
+  backgroundContainer.appendChild(blurredBg);
 
-  // All images will now move towards the same general quadrant of the screen.
-  // Reload the page to get a new direction.
-  const xDirection = Math.random() < 0.5 ? -1 : 1; // -1 for left, 1 for right
-  const yDirection = Math.random() < 0.5 ? -1 : 1; // -1 for up, 1 for down
+  // Create image element in center
+  const fgImage = document.createElement('img');
+  fgImage.style.position = 'absolute';
+  fgImage.style.top = '50%';
+  fgImage.style.left = '50%';
+  fgImage.style.transform = 'translate(-50%, -50%)';
+  fgImage.style.transition = 'opacity 1s ease-in-out';
+  fgImage.style.zIndex = '-1';
+  fgImage.style.opacity = 0;
+  backgroundContainer.appendChild(fgImage);
 
-  function createImageElement() {
-    const img = document.createElement('img');
-    const randomImagePath = backgroundImages[Math.floor(Math.random() * backgroundImages.length)];
-    
-    // Set initial styles for the image
-    img.src = randomImagePath;
-    img.alt = 'Background image';
-    img.style.position = 'absolute'; // Important for positioning
-    //img.style.filter = 'blur(2.5px)';
-    img.style.left = getRandom(-20, 100) + 'vw';
-    img.style.top = getRandom(-20, 100) + 'vh';
-    img.style.width = getRandom(600, 1000) + 'px';
-    img.style.height = img.style.width;
-    img.style.opacity = 0; // Start with opacity 0
+  function switchBackgroundImage() {
+    let newIndex;
+    do {
+      newIndex = Math.floor(Math.random() * backgroundImages.length);
+    } while (newIndex === previousIndex);
+    previousIndex = newIndex;
 
-    // Define the keyframes for this specific image's animation
-    const endX = xDirection * getRandom(100, 250) + 'vw'; // Translate more: Increased range
-    const endY = yDirection * getRandom(100, 250) + 'vh'; // Translate more: Increased range
+    const newImageSrc = backgroundImages[newIndex];
 
-    // Not all should rotate: 60% chance to rotate to a random degree
-    const rotation = Math.random() > 0.4 ? `rotate(${getRandom(-270, 270)}deg)` : 'rotate(0deg)';
+    const tempImg = new Image();
+    tempImg.src = newImageSrc;
+    tempImg.onload = () => {
+      fgImage.style.opacity = 0;
 
-    const keyframes = [
-      { transform: 'scale(0.8) rotate(0deg)', opacity: 0 },
-      { opacity: 0.6, offset: 0.1 },
-      { opacity: 0.6, offset: 0.9 },
-      { transform: `translate(${endX}, ${endY}) scale(1.2) ${rotation}`, opacity: 0 }
-    ];
+      setTimeout(() => {
+        // Update blurred background
+        blurredBg.style.backgroundImage = `url(${newImageSrc})`;
 
-    // Define the options for the animation
-    const options = {
-      duration: getRandom(20000, 35000), // Animate over 20 to 35 seconds
-      easing: 'linear',
-      fill: 'forwards' // Ensures it stays at its final state (invisible)
+        // Update centered foreground image
+        fgImage.src = newImageSrc;
+        fgImage.style.width = tempImg.naturalWidth / 2 + 'px'; // Adjust size if needed
+        fgImage.style.height = 'auto';
+
+        fgImage.style.opacity = 1;
+      }, 500);
     };
-
-    // Run the animation
-    const animation = img.animate(keyframes, options);
-
-    // When the animation finishes, remove the element and create a new one
-    animation.onfinish = () => {
-      img.remove();
-      createImageElement();
-    };
-
-    backgroundContainer.appendChild(img);
   }
 
-  // Create initial set of images
-  for (let i = 0; i < numImagesToShow; i++) {
-    setTimeout(createImageElement, i * (5000 / numImagesToShow));
-  }
+  switchBackgroundImage();
+  setInterval(switchBackgroundImage, switchInterval);
 });
