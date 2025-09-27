@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Add new countdowns to the top of this list.
   const allCountdowns = [
     {
-      title: '✨ Ano novo em Brasil ✨',
+      title: '✨ Ano novo no Brasil ✨',
       startDate: new Date('September 27, 2025 00:00:00'),
       reunionDate: new Date('December 26, 2025 18:00:00'),
     },
