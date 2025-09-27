@@ -227,3 +227,120 @@ h1 {
     font-size: 0.7em;
   }
 }
+
+/* --- ADDED: History Button and Modal Styles --- */
+#history-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+#history-btn:hover {
+  transform: scale(1.1);
+  background-color: var(--progress-bar-end);
+}
+
+/* Modal positioned at top-right */
+.modal {
+  display: none; /* stays hidden by default */
+  position: fixed;
+  z-index: 2000;
+  top: 75px;       /* just below the 📜 button */
+  right: 20px;     /* aligned to the right edge */
+  width: auto;
+  height: auto;
+  background: none; /* remove full-screen overlay */
+  backdrop-filter: none;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+/* Make modal-content look like a floating panel */
+.modal-content {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: var(--text-color-dark);
+  padding: 20px;
+  border-radius: 15px;
+  width: 300px;          /* fixed width for panel */
+  max-height: 70vh;      /* scrollable if too long */
+  overflow-y: auto;
+  box-shadow: var(--card-shadow);
+  animation: slideInFromTop 0.4s ease-out;
+}
+
+/* Slide from top animation */
+@keyframes slideInFromTop {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Close button smaller, tucked inside panel */
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 22px;
+  color: #666;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: var(--primary-color);
+}
+
+.modal-content h2 {
+  font-family: 'Poppins', sans-serif;
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#history-list li {
+  background: var(--card-bg-color); /* Same translucent white as countdown */
+  backdrop-filter: blur(5px);
+  margin-bottom: 15px;
+  padding: 20px;
+  border-radius: 1em;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var(--card-shadow);
+  color: var(--text-color-dark);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  list-style: none;
+}
+
+#history-list li:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+#history-list li strong {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+  display: block;
+  margin-bottom: 0.4em;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+#history-list li em {
+  font-size: 0.9rem;
+  color: var(--text-color-dark);
+  opacity: 0.8;
+}
