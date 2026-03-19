@@ -12,6 +12,11 @@ document.addEventListener('DOMContentLoaded', function () {
       startDate: new Date('May 13, 2025 16:00:00'),
       reunionDate: new Date('July 31, 2025 16:00:00'),
     },
+    {
+      title: '👰🏾‍♀️ Wedding trip 🤵🏼',
+      startDate: new Date('Jan 25, 2026 3:00:00'),
+      reunionDate: new Date('May 16, 2026 13:00:00'),
+    },
     // Add more past or future events here as objects
   ];
 
@@ -127,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const totalImages = 32; 
   // This creates the array ['images/image1.jpg', 'images/image2.jpg', ...] automatically
   const backgroundImages = Array.from({ length: totalImages }, (_, i) => `images/image${i + 1}.jpg`);
-  
+
   const backgroundContainer = document.querySelector('.background');
   const switchInterval = 4000;
   let previousIndex = -1;
