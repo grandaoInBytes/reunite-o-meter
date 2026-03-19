@@ -128,44 +128,97 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   };
 
-  // Set the total number of images you have in your folder
-  const totalImages = 32; 
-  // This creates the array ['images/image1.jpg', 'images/image2.jpg', ...] automatically
+  // --- BACKGROUND LOGIC: Optimized for Zero Lag ---
+  const totalImages = 31;
   const backgroundImages = Array.from({ length: totalImages }, (_, i) => `images/image${i + 1}.jpg`);
-
+  
   const backgroundContainer = document.querySelector('.background');
   const switchInterval = 4000;
-  let previousIndex = -1;
+  
+  // 1. Create a "Deck" of images to ensure we see them all without repeats
+  let imageDeck = [];
+  let nextImageObj = null; // This will hold our "pre-fetched" image
+
+  // Function to refill and shuffle the deck
+  function refillDeck() {
+    imageDeck = [...backgroundImages].sort(() => Math.random() - 0.5);
+  }
+
+  // Setup the visual elements (Clean version)
   const blurredBg = document.createElement('div');
-  blurredBg.style.cssText = `position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; background-size: cover; background-position: center; filter: blur(25px); transition: background-image 1s ease-in-out;`;
+  blurredBg.classList.add('blurred-bg'); // Now uses CSS class!
   backgroundContainer.appendChild(blurredBg);
+
   const fgImage = document.createElement('img');
-  fgImage.style.cssText = `position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: opacity 1s ease-in-out; z-index: -1; opacity: 0;`;
+  fgImage.classList.add('foreground-img'); // Now uses CSS class!
   backgroundContainer.appendChild(fgImage);
 
-  function switchBackgroundImage() {
-    let newIndex;
-    do {
-      newIndex = Math.floor(Math.random() * backgroundImages.length);
-    } while (newIndex === previousIndex);
-    previousIndex = newIndex;
-    const newImageSrc = backgroundImages[newIndex];
+  // 2. The Pre-fetcher: Downloads the next image BEFORE we need it
+  function prepareNextImage() {
+    if (imageDeck.length === 0) refillDeck();
+    
+    const nextSrc = imageDeck.pop();
     const tempImg = new Image();
-    tempImg.src = newImageSrc;
+    
     tempImg.onload = () => {
-      fgImage.style.opacity = 0;
-      setTimeout(() => {
-        blurredBg.style.backgroundImage = `url(${newImageSrc})`;
-        fgImage.src = newImageSrc;
-        fgImage.style.width = tempImg.naturalWidth / 2 + 'px';
-        fgImage.style.height = 'auto';
-        fgImage.style.opacity = 1;
-      }, 500);
+      // Image is now in browser cache! 
+      nextImageObj = {
+        src: nextSrc,
+        width: tempImg.naturalWidth,
+        height: tempImg.naturalHeight
+      };
     };
-  }
-  switchBackgroundImage();
-  setInterval(switchBackgroundImage, switchInterval);
 
-  // --- KICK EVERYTHING OFF ---
+    tempImg.onerror = () => {
+      console.warn(`Skipping broken image: ${nextSrc}`);
+      prepareNextImage(); // Try the next one immediately
+    };
+
+    tempImg.src = nextSrc;
+  }
+
+  // 3. The Switcher: Uses the image that is already loaded
+  function switchBackgroundImage() {
+    // If for some reason the next image isn't ready yet, wait a bit
+    if (!nextImageObj) {
+      setTimeout(switchBackgroundImage, 200) ;
+      return;
+    }
+
+    // Fade out current
+    fgImage.style.opacity = 0;
+
+    setTimeout(() => {
+      // Swap to the pre-loaded image
+      blurredBg.style.backgroundImage = `url(${nextImageObj.src})`;
+      fgImage.src = nextImageObj.src;
+      
+      // Fade in
+      fgImage.style.opacity = 1;
+
+      // Immediately start pre-loading the NEXT one for the next cycle
+      prepareNextImage();
+    }, 600);
+  }
+
+// --- START THE ENGINE ---
+  refillDeck();
+
+  // 1. Set the initial image immediately
+  fgImage.src = 'images/image1.jpg';
+  blurredBg.style.backgroundImage = "url('images/image1.jpg')";
+
+  // 2. Remove image1 from the deck so it doesn't repeat immediately
+  imageDeck = imageDeck.filter(img => img !== 'images/image1.jpg');
+
+  // 3. Prepare the NEXT random image in the background
+  prepareNextImage(); 
+  
+  // 4. Start the loop after the first interval
+  setTimeout(() => {
+    switchBackgroundImage();
+    setInterval(switchBackgroundImage, switchInterval);
+  }, switchInterval); // Wait the full 4 seconds before the first swap
+  // --- KICK OFF COUNTDOWNS ---
   setupCountdowns();
 });
