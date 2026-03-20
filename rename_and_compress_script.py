@@ -1,5 +1,5 @@
 import os
-from PIL import Image  # 🔹 added for compression
+from PIL import Image, ImageOps  # 🔹 added for compression
 
 # TODO: figure out why one pic was resized wrongly (maybe the initial format was different)
 def rename_and_compress_images(folder_path, new_name_prefix="images", start_index=1, quality=80):
@@ -39,6 +39,8 @@ def rename_and_compress_images(folder_path, new_name_prefix="images", start_inde
 
         try:
             with Image.open(old_file_path) as img:
+                img = ImageOps.exif_transpose(img)  # 🔹 correct orientation based on EXIF data
+
                 img = img.convert("RGB")  # 🔹 ensure consistent JPEG format
                 #img.thumbnail((1920, 1920))  # optional resize (keeps aspect ratio)
                 img.save(new_file_path, "JPEG", quality=quality, optimize=True)
